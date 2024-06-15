@@ -14,6 +14,13 @@
             height: 100dvh;
         }
 
+         header {
+           h1 {
+             color: rgb(44, 197, 146);
+           }
+
+        }
+
         main {
             width: 400px;
             max-width: 100%;
@@ -86,7 +93,8 @@
             }
 
             button {
-                background: rgba(7, 45, 233, 0.986);
+                background: rgb(44, 197, 146);
+
                 border: 0;
                 color: white;
                 border-radius: 4px;
@@ -113,12 +121,12 @@
             margin: auto;
             width: 400px;
         }
+
     </style>
     <script type="module">
-        import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
+        import { CreateWebWorkerMLCEngine  } from "https://esm.run/@mlc-ai/web-llm";
        
         const $ = el => document.querySelector(el)
-
         const $form = $('form')
         const $input = $('input')
         const $template = $('#message-template')
@@ -128,8 +136,15 @@
         const $info = $('small')
 
         let messages = []
+        const myWorker = new Worker('worker.js', {type: 'module'});
+
+        myWorker.onerror = function(error) {
+            console.error('Error en el Web Worker:', error);
+        };
+
         const SELECT_MODEL = 'Llama-3-8B-Instruct-q4f32_1-MLC'
-        const engine = await CreateMLCEngine(
+        const engine = await CreateWebWorkerMLCEngine (
+            myWorker,
             SELECT_MODEL,
             {
                initProgressCallback: (info) => {
@@ -207,6 +222,10 @@
 </head>
 <body>
   <!-- Create our chat gpt   -->
+    <header>
+        <h1>ChatGPT local 100%</h1>
+        <h5>Introduce tu pregunta.</h5>
+   </header>
    <main>
         <ul></ul>
    </main>
