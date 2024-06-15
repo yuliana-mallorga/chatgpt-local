@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,10 +15,10 @@
             height: 100dvh;
         }
 
-         header {
-           h1 {
-             color: rgb(44, 197, 146);
-           }
+        header {
+            h1 {
+                color: rgb(44, 197, 146);
+            }
 
         }
 
@@ -43,11 +44,11 @@
 
         .message {
             display: flex;
-            flex-direction: column;  
+            flex-direction: column;
             margin: 4px 0;
-            padding: 4px 8px; 
+            padding: 4px 8px;
 
-            > span:first-child {
+            >span:first-child {
                 width: 36px;
                 height: 36px;
                 background: #eee;
@@ -58,7 +59,7 @@
                 align-items: center;
                 border-radius: 999999px;
             }
-            
+
             p {
                 padding: 6px 8px;
                 border-radius: 4px;
@@ -68,17 +69,21 @@
             &.user {
                 align-self: flex-end;
                 align-items: flex-end;
-                span, p {
+
+                span,
+                p {
                     background: #94cbf859;
                 }
             }
 
             &.bot {
                 align-self: flex-start;
-                span, p {
+
+                span,
+                p {
                     background: #94f8d559;
                 }
-            } 
+            }
         }
 
         form {
@@ -101,8 +106,8 @@
                 cursor: pointer;
                 padding: 8px;
                 transition: background .5s ease;
-                
-                &[disabled]{
+
+                &[disabled] {
                     background: #ccc;
                     opacity: .6;
                     pointer-events: none;
@@ -121,11 +126,10 @@
             margin: auto;
             width: 400px;
         }
-
     </style>
     <script type="module">
-        import { CreateWebWorkerMLCEngine  } from "https://esm.run/@mlc-ai/web-llm";
-       
+        import { CreateWebWorkerMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
+
         const $ = el => document.querySelector(el)
         const $form = $('form')
         const $input = $('input')
@@ -136,23 +140,23 @@
         const $info = $('small')
 
         let messages = []
-        const myWorker = new Worker('worker.js', {type: 'module'});
+        const myWorker = new Worker('worker.js', { type: 'module' });
 
-        myWorker.onerror = function(error) {
+        myWorker.onerror = function (error) {
             console.error('Error en el Web Worker:', error);
         };
 
         const SELECT_MODEL = 'Llama-3-8B-Instruct-q4f32_1-MLC'
-        const engine = await CreateWebWorkerMLCEngine (
+        const engine = await CreateWebWorkerMLCEngine(
             myWorker,
             SELECT_MODEL,
             {
-               initProgressCallback: (info) => {
-                $info.textContent = `${info.text}%`
-                if(info.progress === 1) {
-                    $button.removeAttribute('disabled')
+                initProgressCallback: (info) => {
+                    $info.textContent = `${info.text}%`
+                    if (info.progress === 1) {
+                        $button.removeAttribute('disabled')
+                    }
                 }
-               } 
             }
         )
 
@@ -160,18 +164,18 @@
             event.preventDefault()
             const messageText = $input.value.trim()
 
-            if( messageText !== ''){
+            if (messageText !== '') {
                 //add message in the DOM
-                 $input.value = ''
+                $input.value = ''
             }
-           
+
             addMessage(messageText, 'user')
             $button.setAttribute('disabled', '')
 
-            const userMessage =  {
-                        role: 'user',
-                        content: messageText
-                    }
+            const userMessage = {
+                role: 'user',
+                content: messageText
+            }
 
             messages.push(userMessage)
 
@@ -187,8 +191,8 @@
             for await (const chunk of chunks) {
                 const choice = chunk.choices[0]
                 const content = choice?.delta?.content ?? ''
-               reply += content
-               $botMessage.textContent = reply
+                reply += content
+                $botMessage.textContent = reply
             }
 
             $button.removeAttribute('disabled')
@@ -196,14 +200,14 @@
                 role: 'assistant',
                 content: reply
             })
-            
+
             $container.scrollTop = $container.scrollHeight
         })
 
-        function addMessage(text, sender){
+        function addMessage(text, sender) {
             const clonedTemplate = $template.content.cloneNode(true)
             const $newMessage = clonedTemplate.querySelector('.message')
-            
+
             const $who = $newMessage.querySelector('span')
             const $text = $newMessage.querySelector('p')
 
@@ -220,26 +224,28 @@
         }
     </script>
 </head>
+
 <body>
-  <!-- Create our chat gpt   -->
+    <!-- Create our chat gpt   -->
     <header>
         <h1>ChatGPT local 100%</h1>
         <h5>Introduce tu pregunta.</h5>
-   </header>
-   <main>
+    </header>
+    <main>
         <ul></ul>
-   </main>
-   <form>
+    </main>
+    <form>
         <input placeholder="Escribe tu mensaje aqui...">
-        <button disabled >Enviar</button>
-   </form>
-   <template id="message-template">
-    <li class="message">
-        <span></span>
-        <p></p>
-    </li>
-   </template>
-   <small>&nbsp;</small>
-   <!--hhhhhhhh-->
+        <button disabled>Enviar</button>
+    </form>
+    <template id="message-template">
+        <li class="message">
+            <span></span>
+            <p></p>
+        </li>
+    </template>
+    <small>&nbsp;</small>
+    <!--hhhhhhhh-->
 </body>
+
 </html>
