@@ -99,14 +99,13 @@
 
             button {
                 background: rgb(44, 197, 146);
-
                 border: 0;
                 color: white;
                 border-radius: 4px;
                 cursor: pointer;
                 padding: 8px;
                 transition: background .5s ease;
-
+                
                 &[disabled] {
                     background: #ccc;
                     opacity: .6;
@@ -114,6 +113,11 @@
                 }
 
             }
+        }
+
+        .button-container {
+            display: flex;
+            align-items: center;
         }
 
         small {
@@ -126,6 +130,25 @@
             margin: auto;
             width: 400px;
         }
+
+        .loader {
+            width: 12px;
+            padding: 8px;
+            margin-right: 5px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: rgb(44, 197, 146);
+            --_m: 
+                conic-gradient(#0000 10%,#000),
+                linear-gradient(#000 0 0) content-box;
+            -webkit-mask: var(--_m);
+                    mask: var(--_m);
+            -webkit-mask-composite: source-out;
+                    mask-composite: subtract;
+            animation: l3 1s infinite linear;
+            }
+            @keyframes l3 {to{transform: rotate(1turn)}}
+
     </style>
     <script type="module">
         import { CreateWebWorkerMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
@@ -138,6 +161,7 @@
         const $container = $('main')
         const $button = $('button')
         const $info = $('small')
+
 
         let messages = []
         const myWorker = new Worker('worker.js', { type: 'module' });
@@ -153,7 +177,9 @@
             {
                 initProgressCallback: (info) => {
                     $info.textContent = `${info.text}%`
+
                     if (info.progress === 1) {
+                        $button.textContent = 'Send'
                         $button.removeAttribute('disabled')
                     }
                 }
@@ -236,7 +262,7 @@
     </main>
     <form>
         <input placeholder="Write your message here...">
-        <button disabled>Send</button>
+        <button disabled class="button-container"><div class="loader"></div>Loading model...</button>
     </form>
     <template id="message-template">
         <li class="message">
